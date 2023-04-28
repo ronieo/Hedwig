@@ -1,5 +1,5 @@
 // CommentEdit.tsx
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useRef, useState } from 'react'
 import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
@@ -11,9 +11,10 @@ interface CommentEditProps {
     initialContent: string
     isReadOnly: boolean
     onSubmit: (content: string) => void
+    resetOnSubmit: boolean
 }
 
-function CommentEdit({ initialContent, isReadOnly, onSubmit }: CommentEditProps) {
+function CommentEdit({ initialContent, isReadOnly, onSubmit, resetOnSubmit }: CommentEditProps) {
     const [showCommentInfo, setShowCommentInfo] = useState(false)
     const [letterCount, setLetterCount] = useState(initialContent.length)
     const [label, setLabel] = useState('')
@@ -39,6 +40,10 @@ function CommentEdit({ initialContent, isReadOnly, onSubmit }: CommentEditProps)
     }
 
     const handleCommentSubmit = () => {
+        if (resetOnSubmit) {
+            setContent('')
+
+        }
         onSubmit(content)
     }
 
@@ -53,7 +58,7 @@ function CommentEdit({ initialContent, isReadOnly, onSubmit }: CommentEditProps)
             readOnly: isReadOnly,
         },
         focused: isReadOnly,
-        defaultValue: initialContent,
+        defaultValue: content,
     }
 
     const circularProgressProps = {
@@ -66,19 +71,24 @@ function CommentEdit({ initialContent, isReadOnly, onSubmit }: CommentEditProps)
     return (
         <>
             <StyledCardInput fullWidth multiline {...textFieldProps} />
-            {!isReadOnly && showCommentInfo && (
-                <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end' }}>
-                    <CircularProgress {...circularProgressProps} />
-                    <Box>
-                        <Typography color={letterCount > 150 ? 'red' : 'primary'} variant="caption">
-                            {letterCount}
-                        </Typography>
-                    </Box>
-                </Box>
-            )}
-            <Button onClick={handleCommentSubmit} disabled={letterCount === 0 || letterCount > 150}>
-                Hoot
-            </Button>
+            <Box sx={{ display: 'flex', justifyContent: 'end', gap: '10px' }}>
+                {!isReadOnly && showCommentInfo && (
+                    <>
+                        <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end' }}>
+                            <CircularProgress {...circularProgressProps} />
+                            <Box>
+                                <Typography color={letterCount > 150 ? 'red' : 'primary'} variant="caption">
+                                    {letterCount}
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        <Button onClick={handleCommentSubmit} disabled={letterCount === 0 || letterCount > 150}>
+                            Hoot
+                        </Button>
+                    </>
+                )}
+            </Box>
         </>
     )
 }

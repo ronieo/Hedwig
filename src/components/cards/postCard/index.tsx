@@ -13,11 +13,12 @@ import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutline'
 import CustomCard from '../customCard'
 
 import { MouseEvent, useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { getPost, likePost } from '@/apis/Post'
+import { useMutation,  useQueryClient } from 'react-query'
+import {  likePost } from '@/apis/Post'
 import { timeSince } from '@/utils/timeSince'
 import { PostCardData } from '@/types/Card'
 import CustomDrawer, { DrawerType, POST_UTIL_TYPE } from '@/components/customDrawer'
+import { useRouter } from 'next/router'
 import { queryKeys } from '@/constants/queryKey'
 
 /**
@@ -83,7 +84,7 @@ function PostCard({ userName, content, createdAt, updatedAt, postId, img, likesC
         mutate(postId)
         
     }
-
+    const router = useRouter()
     const profileImg = '/default.png'
     // 게시글 본문에 들어갈 컴포넌트
     const bodyContent = (): React.ReactNode => {
@@ -91,7 +92,7 @@ function PostCard({ userName, content, createdAt, updatedAt, postId, img, likesC
             <>
                 <StyledCardContent>{content}</StyledCardContent>
                 <Box>
-                    {img && !isDetailPost ? <StyledCardMedia image={img.toString()} /> : <StyledCardMedia image={img?.toString()} onClick={handleClickOpen} />}
+                    {img && !isDetailPost ? <StyledCardMedia src='image' image={img?.toString()} /> : <StyledCardMedia   src='image' image={img?.toString()} onClick={handleClickOpen} />}
 
                     {img && open && (
                         <Dialog open={open} onClose={handleClose}>
@@ -102,7 +103,7 @@ function PostCard({ userName, content, createdAt, updatedAt, postId, img, likesC
                     )}
                 </Box>
                 <Divider />
-                {isDetailPost && <Typography>{createdAt.toLocaleString()}</Typography>}
+                {isDetailPost && <Typography>{timeStamp}</Typography>}
             </>
         )
     }
@@ -112,7 +113,7 @@ function PostCard({ userName, content, createdAt, updatedAt, postId, img, likesC
         return (
             <StyledPostFooter>
                 <Box mr={'0.6em'} sx={{ display: 'flex', position: 'relative' }}>
-                    <IconButton sx={{ padding: '0', mr: '0.4em' }} onClick={() => console.log(`Post ID: ${postId}\n Comment Button Clicked`)}>
+                    <IconButton sx={{ padding: '0', mr: '0.4em' }} onClick={() =>  router.push(`/post/${postId}`)}>
                         <ChatBubbleOutline />
                     </IconButton>
                     <Typography>{commentsCount}</Typography>
@@ -136,11 +137,11 @@ function PostCard({ userName, content, createdAt, updatedAt, postId, img, likesC
     return (
         <>
             <CustomCard profileImg={profileImg} userName={userName} timeStamp={isDetailPost ? '' : timeStamp} moreBtn={moreBtn} moreBtnFn={togglePostDrawer}>
-                <div onClick={() => (window.location.href = `/post/${postId}`)}>{bodyContent()}</div>
+                <div onClick={() => (window.location.href = `/post/${postId ? postId : ''}`)}>{bodyContent()}</div>
                 {footerContent()}
             </CustomCard>
 
-            <CustomDrawer {...postDrawerProps} toggleDrawer={togglePostDrawer} isOpen={isPostDrawerOpen} />
+            {moreBtn && <CustomDrawer {...postDrawerProps} toggleDrawer={togglePostDrawer} isOpen={isPostDrawerOpen} />}
         </>
     )
 }

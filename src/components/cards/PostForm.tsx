@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import TextField from '@mui/material/TextField'
 import ArrowBack from '@mui/icons-material/ArrowBack'
@@ -7,9 +8,6 @@ import VideoFileOutlined from '@mui/icons-material/VideoFileOutlined'
 import Gif from '@mui/icons-material/Gif'
 
 import React, { useState } from 'react'
-import CustomButton from '@/components/CustomButton'
-import { axiosInstance } from '@/apis/axios'
-import withAuth from '@/routes/ProtectedRoute'
 import { useRouter } from 'next/router'
 
 interface PostInput {
@@ -30,8 +28,6 @@ function PostForm({ mutate, initialValue = { content: '', img: null } }: PostFor
     // 미디어 추가 함수
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, files } = e.target
-        // console.log('Files:', files)
-        console.log(name, value, files)
 
         const file = files && files[0]
         if (files) {
@@ -48,7 +44,7 @@ function PostForm({ mutate, initialValue = { content: '', img: null } }: PostFor
             }
             reader.readAsDataURL(file)
         }
-        console.log('handleChange result:', postInput, file)
+        console.log('handleChange result:',  file)
     }
 
     //미디어 지우기
@@ -63,7 +59,7 @@ function PostForm({ mutate, initialValue = { content: '', img: null } }: PostFor
         formData.append('content', postInput.content)
         formData.append('file', postInput.img as File)
         mutate(formData)
-        console.log(formData.getAll('img'))
+        // console.log(formData.getAll('img'))
         alert('Hedwig가 날아갑니다')
         router.push('/post')
         console.log('handlePostSubmit result:')
@@ -77,9 +73,9 @@ function PostForm({ mutate, initialValue = { content: '', img: null } }: PostFor
                         <ArrowBack />
                     </IconButton>
                     <form onSubmit={handlePostSubmit}>
-                        <CustomButton type="submit" size="small" color="primary">
+                        <Button type="submit" size="small" color="primary">
                             HOOT
-                        </CustomButton>
+                        </Button>
                     </form>
                 </Box>
                 <TextField
@@ -98,9 +94,9 @@ function PostForm({ mutate, initialValue = { content: '', img: null } }: PostFor
                 {previewUrl && (
                     <Box mb={2}>
                         <img src={previewUrl} alt="Preview" style={{ maxWidth: '50%', margin: '0 0.5em' }} />
-                        <CustomButton onClick={handleClearPreview} size="small" color="secondary">
+                        <Button onClick={handleClearPreview} size="small" color="secondary">
                             지우기
-                        </CustomButton>
+                        </Button>
                     </Box>
                 )}
                 <Box display="flex" alignItems="center">

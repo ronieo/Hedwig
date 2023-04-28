@@ -59,8 +59,13 @@ export interface PostCardData extends CardData {
  * @date 2023.04.23
  * @author 임성열
  */
-export interface CommentCardData extends CardData {
+export interface CommentCardData {
     commentId: number
+    userName: string
+    comment: string
+    createdAt: Date
+    updatedAt: Date
+    moreBtn: boolean
 }
 
 /**

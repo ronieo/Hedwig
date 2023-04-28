@@ -1,12 +1,12 @@
 import { CommentCardData } from '@/types/Card'
 import CustomCard from '../customCard'
 
-import { StyledCardContent, StyledCardInput } from '../styles'
+import { StyledCardContent } from '../styles'
 import { timeSince } from '@/utils/timeSince'
 import { useState } from 'react'
 import CustomDrawer, { COMMENT_UTIL_TYPE, DrawerType } from '@/components/customDrawer'
 import CommentEdit from '../commentEdit'
-import { useMutation } from 'react-query'
+import { useMutation, useQueryClient } from 'react-query'
 import { updateComment } from '@/apis/Comment'
 
 /**
@@ -26,13 +26,17 @@ import { updateComment } from '@/apis/Comment'
  * @date 2023.04.23
  * @author 임성열
  */
-function CommentCard({ commentId, userName, content, createdAt, updatedAt, moreBtn }: CommentCardData) {
+
+function CommentCard({ commentId, userName, comment, createdAt, updatedAt, moreBtn }: CommentCardData) {
     const [contetReadonly, setContetReadonly] = useState<boolean>(true)
-    const [isCommentDrawerOpen, setIsCommentDrawerOpen] = useState(false)
+    const [isCommentDrawerOpen, setIsCommentDrawerOpen] = useState<boolean>(false)
+
+    const propCreatedAt = new Date(createdAt)
+    const propUpdatedAt = new Date(updatedAt)
 
     // 작성시간과 수정시간이 같다면 작성된 시간 기준으로 문자열 생성
     // 그게 아니라면 수정이 된 것이므로 수정시간을 기준으로 문자열 생성
-    const timeStamp = createdAt.toString() === updatedAt.toString() ? timeSince(createdAt) + ' 작성됨' : timeSince(updatedAt) + ' 수정됨'
+    const timeStamp = propCreatedAt === propUpdatedAt ? timeSince(propCreatedAt) + ' 작성됨' : timeSince(propUpdatedAt) + ' 수정됨'
    
     const toggleCommentDrawer = () => {
         setIsCommentDrawerOpen((prev) => !prev)
@@ -48,18 +52,20 @@ function CommentCard({ commentId, userName, content, createdAt, updatedAt, moreB
         isOpen: isCommentDrawerOpen,
         commentFn: toggleReadOnly,
     }
-
-    const { mutate } = useMutation((variables: { content: string; commentId: number }) => updateComment(variables), {
+    const queryClient = useQueryClient()
+    const { mutate } = useMutation(updateComment, {
         onSuccess: () => {
-            // invalidate query
+            queryClient.invalidateQueries('comments')
         },
         onError: (error) => {
-            alert(error)
+           console.log(error)
         },
     })
 
     const handleCommentUpdate = (updatedContent: string) => {
-        mutate({ content: updatedContent, commentId: commentId })
+        const newData = { comment: updatedContent, commentId: commentId }
+        mutate(newData)
+        setContetReadonly(true)
     }
 
     // CustomCard 컴포넌트 레이아웃안의 자식 요소로 전달
@@ -67,12 +73,12 @@ function CommentCard({ commentId, userName, content, createdAt, updatedAt, moreB
         <>
             <CustomCard profileImg={'/default.png'} userName={userName} timeStamp={timeStamp}  moreBtn={moreBtn} moreBtnFn={toggleCommentDrawer}>
                 {contetReadonly ? (
-                    <StyledCardContent>{content}</StyledCardContent>
+                    <StyledCardContent>{comment}</StyledCardContent>
                 ) : (
-                    <CommentEdit initialContent={content} isReadOnly={false} onSubmit={handleCommentUpdate} />
+                    <CommentEdit resetOnSubmit={false} initialContent={comment} isReadOnly={false} onSubmit={handleCommentUpdate} />
                 )}
             </CustomCard>
-            <CustomDrawer {...commentDrawerProps} toggleDrawer={toggleCommentDrawer } isOpen={isCommentDrawerOpen}/>
+            {moreBtn && <CustomDrawer {...commentDrawerProps} toggleDrawer={toggleCommentDrawer } isOpen={isCommentDrawerOpen}/>}
         </>
     )
 }

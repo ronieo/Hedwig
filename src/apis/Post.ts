@@ -7,17 +7,17 @@ export const createPost = async (createPostData: FormData) => {
             'Content-Type': 'multipart/form-data',
         },
     })
-    console.log(data)
+
 }
 
 export const getPost = async (id: number) => {
-    const { data } = await axiosInstance.get(`/post/${id}`)
-    return data
+    const response = await axiosInstance.get(`/post/${id}`)
+    return response.data
 }
 
 export const getPosts = async () => {
-    const { data } = await axiosInstance.get('/post')
-    return data
+    const response = await axiosInstance.get('/post')
+    return response.data
 }
 
 

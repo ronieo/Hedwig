@@ -1,25 +1,12 @@
 import BottomNavigation from '@mui/material/BottomNavigation'
 import BottomNavigationAction from '@mui/material/BottomNavigationAction'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import DialogTitle from '@mui/material/DialogTitle'
-import Drawer from '@mui/material/Drawer'
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
+
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 
 import CreateIcon from '@mui/icons-material/Create'
 import HomeIcon from '@mui/icons-material/Home'
-import LogoutIcon from '@mui/icons-material/Logout'
+
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import Link from 'next/link'
 import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react'
@@ -29,11 +16,12 @@ import { useRouter } from 'next/router'
 import PostCard from '@/components/cards/postCard'
 import { getPosts } from '@/apis/Post'
 import { useQuery } from 'react-query'
-import { logout, verify } from '@/apis/Auth';
+import { verify } from '@/apis/Auth';
 import withAuth from '@/routes/ProtectedRoute'
-import { queryKeys } from '@/constants/queryKey'
+
 import Loader from '@/components/Loader'
 import { PostResponseData } from '@/types/Post'
+import CustomDrawer, { LOGOUT_UTIL_TYPE } from '@/components/customDrawer'
 
 // tab 컴포넌트 스타일 객체
 const tabStyles = {
@@ -59,13 +47,16 @@ const navStyles = {
 const Post = () => {
     // 무한 스크롤 관련 state
     const [allData, setAllData] = useState<any[]>([])
-    const [pageNumber, setPageNumber] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
+    const [pageNumber, setPageNumber] = useState<number>(1)
+    const [pageSize, setPageSize] = useState<number>(10)
     const endOfListRef = useRef<HTMLDivElement>(null)
 
     const { data: allPost, isLoading } = useQuery('posts', getPosts, {
         onSuccess: (allPost) => {
-            setAllData(allPost)
+            const recentSortedPost = allPost.sort((comp1: PostResponseData, comp2: PostResponseData) => {
+                return new Date(comp2.updatedAt).getTime() - new Date(comp1.updatedAt).getTime()
+            })
+            setAllData(recentSortedPost)
         },
     })
     const handleLoadMore = () => {
@@ -112,10 +103,9 @@ const Post = () => {
     const currentUser = userdata?.content.username
 
     //MUI 컴포넌트 states
-    const [value, setValue] = useState('main')
-    const [btValue, setBtValue] = useState('home')
-    const [drawerState, setDrawerState] = useState(false)
-    const [dialogState, setDialogState] = useState(false)
+    const [value, setValue] = useState<string>('main')
+    const [btValue, setBtValue] = useState<string>('home')
+    const [drawerState, setDrawerState] = useState<boolean>(false)
 
     let myPost = null
     if (value === 'my') {
@@ -146,57 +136,15 @@ const Post = () => {
         setBtValue(newValue)
     }
 
-    const toggleDrawer = (open: boolean) => () => {
-        setDrawerState(open)
+    const toggleDrawer  = () => {
+        setDrawerState(prev => !prev)
     }
 
-    const toggleDialog = () => {
-        setDialogState(!dialogState)
-    }
 
-    const logOut = (): void => {
-        //TODO 페이지만 이동할게 아니라 api 호출을 통해서 로그아웃 로직을 요청해야한다!
-        logout()
-        router.push('/')
-    }
-
-    const list = () => (
-        <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
-            <List>
-                <ListItem key="Logout" disablePadding>
-                    <ListItemButton onClick={toggleDialog}>
-                        <ListItemIcon>
-                            <LogoutIcon />
-                        </ListItemIcon>
-                        <ListItemText primary={'Logout'} />
-                    </ListItemButton>
-                </ListItem>
-            </List>
-        </Box>
-    )
     if (isLoading) {
         return <Loader />
     }
 
-    const dummy = {
-        commentId: 2,
-        content: "2342",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        userName: "user",
-
-    }
-    const postDummy = {
-        postId: 2,
-        content: "2342",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        userName: "user",
-        likesCount: 5,
-        commentsCount: 44,
-         isLiked: true
- 
-    }
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100vh' }}>
             <Link href="/post">
@@ -246,25 +194,9 @@ const Post = () => {
             <BottomNavigation value={btValue} onChange={handleBtNavChange} sx={{ position: 'fixed', bottom: '0' }}>
                 <BottomNavigationAction label="new" value="new" icon={<CreateIcon sx={{ fontSize: '30px' }} />} sx={navStyles} href="post/new" />
                 <BottomNavigationAction label="home" value="home" icon={<HomeIcon sx={{ fontSize: '30px' }} />} sx={navStyles} href="post/" />
-                <BottomNavigationAction label="profile" value="profile" icon={<AccountCircleIcon sx={{ fontSize: '30px' }} />} sx={navStyles} onClick={toggleDrawer(true)} />
-                <Drawer anchor={'bottom'} open={drawerState} onClose={toggleDrawer(false)}>
-                    {list()}
-                </Drawer>
+                <BottomNavigationAction label="profile" value="profile" icon={<AccountCircleIcon sx={{ fontSize: '30px' }} />} sx={navStyles} onClick={toggleDrawer} />
+                <CustomDrawer type={LOGOUT_UTIL_TYPE} isOpen={drawerState} toggleDrawer={toggleDrawer} />
             </BottomNavigation>
-            {/* 로그아웃 옵션을 선택했을때 나타나는 dialog*/}
-            <Dialog open={dialogState} onClose={toggleDialog} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-                <DialogTitle id="confirm-dialog-title">{'로그아웃하시겠습니까?'}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="confirm-dialog-description">진짜로 가실거에요?</DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    {/* TODO 로그아웃 요청 메소드 추가할것 */}
-                    <Button onClick={logOut}>로그아웃</Button>
-                    <Button onClick={toggleDialog} autoFocus>
-                        취소
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </div>
     )
 }

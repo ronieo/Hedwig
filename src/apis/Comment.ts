@@ -8,13 +8,10 @@ export const getComments = async (postId: number) => {
 
 export const createComment = async ({ postId, content }: CommentRequest) => {
     const response = await axiosInstance.post(`/comment`, { postId, content })
-    console.log(response)
 }
-export const updateComment = async ({ commentId, content }: CommentUpdateRequest) => {
-    const response = await axiosInstance.put(`/comment/${commentId}`, content)
-    console.log(response)
+export const updateComment = async ({ commentId, comment }: CommentUpdateRequest) => {
+    const response = await axiosInstance.put(`/comment/${commentId}`, { comment })
 }
 export const deleteComment = async (commentId: number) => {
     const response = await axiosInstance.delete(`/comment/${commentId}`)
-    console.log(response)
 }

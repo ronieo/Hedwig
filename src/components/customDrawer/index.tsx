@@ -21,7 +21,9 @@ import LogoutIcon from '@mui/icons-material/Logout'
 
 import { deletePost } from '@/apis/Post'
 import { deleteComment } from '@/apis/Comment'
-
+import { logout } from '@/apis/Auth'
+import { useMutation } from 'react-query'
+import { queryKeys } from '@/constants/queryKey'
 
 // 로그아웃 타입 만들어서 콜할것
 export const POST_UTIL_TYPE = 'POST'
@@ -49,7 +51,7 @@ interface DialogProps {
 
 function CustomDrawer({ type, id, isOpen, toggleDrawer, commentFn }: CustomDrawerProps) {
     const [dialogState, setDialogState] = useState(false)
-
+    
     const router = useRouter()
     const toggleAll = () => {
         toggleDialog()
@@ -67,7 +69,6 @@ function CustomDrawer({ type, id, isOpen, toggleDrawer, commentFn }: CustomDrawe
     })
 
     function getListItemContents(type: DrawerType) {
-        console.log('[getListItemContets] has been called')
         switch (type) {
             case POST_UTIL_TYPE:
                 return [
@@ -114,7 +115,6 @@ function CustomDrawer({ type, id, isOpen, toggleDrawer, commentFn }: CustomDrawe
     }
 
     function getDialogProps(type: DrawerType, key: DialogKeyType): DialogProps {
-
         switch (type) {
             case POST_UTIL_TYPE:
                 switch (key) {
@@ -122,7 +122,7 @@ function CustomDrawer({ type, id, isOpen, toggleDrawer, commentFn }: CustomDrawe
                         return {
                             title: '게시글을 수정하는 페이지로 이동하시겠습니까?',
                             onConfirmClick: () => {
-                                router.push(`/post/edit/${id}`)
+                                router.push(`post/edit/${id}`)
                                 toggleAll()
                             },
                         }
@@ -166,7 +166,9 @@ function CustomDrawer({ type, id, isOpen, toggleDrawer, commentFn }: CustomDrawe
                     title: '로그아웃하시겠습니까?',
                     contentText: '진짜로 가실거에요?',
                     onConfirmClick: () => {
-                        router.push('/login')
+                        logout()
+                        router.push('/auth/login')
+                        toggleAll()
                     },
                 }
             default:
@@ -174,7 +176,6 @@ function CustomDrawer({ type, id, isOpen, toggleDrawer, commentFn }: CustomDrawe
         }
     }
     function getListContents() {
-
         return (
             <Box role="presentation">
                 <List>
@@ -198,7 +199,6 @@ function CustomDrawer({ type, id, isOpen, toggleDrawer, commentFn }: CustomDrawe
     }
 
     function getDialogContents(dialogProps: { title: string; contentText?: string; onConfirmClick: () => void }) {
-
         return (
             <Dialog open={dialogState} onClose={toggleDrawer}>
                 <DialogTitle>{dialogProps.title}</DialogTitle>

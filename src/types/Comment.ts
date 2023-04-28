@@ -5,7 +5,7 @@ export interface CommentRequest {
 
 export interface CommentUpdateRequest {
   commentId: number
-  content: string
+  comment: string
 }
 
 export interface Comment extends CommentRequest {

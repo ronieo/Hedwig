@@ -1,11 +1,12 @@
 // CommentInput.tsx
 import React from 'react'
 import { useRouter } from 'next/router'
-import { useMutation } from 'react-query'
+import { useMutation, useQueryClient } from 'react-query'
 import { createComment } from '@/apis/Comment'
 
 import CustomCard from '../customCard'
 import CommentEdit from '../commentEdit'
+import { queryKeys } from '@/constants/queryKey'
 
 interface CommentInputProps {
     profileImg: string
@@ -14,23 +15,25 @@ interface CommentInputProps {
 
 function CommentInput({ profileImg, userName }: CommentInputProps) {
     const router = useRouter()
-
-    const { mutate } = useMutation((variables: { content: string; postId: number }) => createComment(variables), {
+    const postId = Number(router.query.id)
+    const queryClient = useQueryClient()
+    const { mutate } = useMutation((variables: { content: string, postId: number }) => createComment(variables), {
         onSuccess: () => {
-            // invalidate query
+            queryClient.invalidateQueries('comments');
+            queryClient.invalidateQueries(queryKeys.post.post(postId));
         },
         onError: (error) => {
-            alert(error)
+            console.log(error)
         },
     })
 
     const handleCommentSubmit = (content: string) => {
-        mutate({ content: content, postId: Number(router.query.id) })
+        mutate({ content: content, postId: postId })
     }
 
     return (
         <CustomCard profileImg={profileImg} userName={userName} timeStamp="" moreBtn={false}>
-            <CommentEdit initialContent="" isReadOnly={false} onSubmit={handleCommentSubmit} />
+            <CommentEdit resetOnSubmit={false}  initialContent="" isReadOnly={false} onSubmit={handleCommentSubmit} />
         </CustomCard>
     )
 }
