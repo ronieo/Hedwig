@@ -14,7 +14,7 @@
 :----: | :----: | :----: | :----: | :----: 
 <img src="https://avatars.githubusercontent.com/u/69203535?v=4" style="width: 180px;" /> | <img src="https://avatars.githubusercontent.com/u/56331400?v=4" style="width: 150px" /> | <img src="https://avatars.githubusercontent.com/u/120437898?v=4" style="width: 150px;" /> | <img src="https://avatars.githubusercontent.com/u/106302236?v=4" style="width: 150px;" /> | <img src="https://avatars.githubusercontent.com/u/76941552?v=4" style="width: 150px"/>
 [johnphjkr](https://github.com/johnphjkr) | [jyc-coder](https://github.com/jyc-coder) | [sung34](https://github.com/sung34) | [bongsee](https://github.com/bongsee) |  [ronieo](https://github.com/ronieo)
-[BE]<br> [BE, FE 배포]<br>|[메인 페이지]<br>[메인 페이지 하단탭]<br>[무한스크롤]<br>[게시글 테스트코드]<br>[게시글 수정 및 삭제]<br>[수정 페이지]<br>[CustomComponents]<br>|[메인페이지 상단탭]<br>[게시글상세]<br>[게시글 수정 및 삭제]<br>[게시글 moreButton]<br>[댓글]<br>[댓글 수정/삭제]<br>[글로벌 스타일]<br>|[회원가입]<br>[로그인]<br>[인증]<br>[로딩, 스낵바 컴포넌트]<br>|[글쓰기]<br>
+[BE]<br> [BE, FE 배포]<br>|[메인 페이지]<br>[메인 페이지 하단탭]<br>[무한스크롤]<br>[게시글 테스트코드]<br>[게시글 수정 및 삭제]<br>[수정 페이지]<br>[CustomComponents]<br>|[메인페이지 상단탭]<br>[게시글상세]<br>[게시글 수정 및 삭제]<br>[게시글 moreButton]<br>[댓글]<br>[댓글 수정/삭제]<br>[글로벌 스타일]<br>|[회원가입]<br>[로그인]<br>[인증]<br>[로딩, 스낵바 컴포넌트]<br>|[글쓰기]<br>[프로젝트 노션 제작]<br>[회의 기록]<br>[로고 디자인]<br>
 
 <br/>
 
