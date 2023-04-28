@@ -166,7 +166,7 @@
 ```
 FE
 - Basic: `React`, `Typescript`, `Next.js`, `MUI `
-- Library:  `react-query`, `react-redux`, `axios`, `dotenv`, `eslint`, `nprogress`, `react-cookie`
+- Library:  `react-query`, `react-redux`, `axios`, `dotenv`, `eslint`, `nprogress`, `react-cookie`, `universal-cookie`, `nprogress`
 
 BE
 - Basic: `React`, `Typescript`
